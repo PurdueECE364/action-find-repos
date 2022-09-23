@@ -1,0 +1,25 @@
+name: "action-find-repos"
+description: "Action to find org repos that match a set of filters."
+author: "Purdue ECE"
+inputs:
+  org:
+    description: "organization to search in"
+    default: ${{ github.repository_owner }}
+  token:
+    description: "Personal access token."
+    default: ${{ github.token }}
+  pattern:
+    description: "filter for repos matching a name"
+    default: ".*"
+  created_before:
+    description: "filter for repos created before a timestamp."
+    default: ""
+  created_after:
+    description: "filter for repos created after a timestamp"
+    default: "01/01/1970 00:00:00"
+outputs:
+  repos:
+    description: comma-separated list of repos that satisfy all filters
+runs:
+  using: "docker"
+  image: "Dockerfile"

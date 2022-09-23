@@ -1,0 +1,13 @@
+name: Firebase Test
+on: [push]
+
+jobs:
+  test_firebase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: get_repos
+        uses: ./
+        with:
+          org: firebase
+          pattern: ^quickstart.*$
