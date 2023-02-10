@@ -4,9 +4,10 @@ on: push
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    env:
+      INPUT_TOKEN: '${{ secrets.GEOFF_PAT }}'
     steps:
       - uses: actions/checkout@v3
-      - run: echo "${{ secrets.GEOFF_PAT }}" >> $INPUT_TOKEN
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
