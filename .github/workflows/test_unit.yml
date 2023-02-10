@@ -1,11 +1,12 @@
-name: Firebase Test
+name: Unit Tests
 on: push
 
 jobs:
-  test_firebase:
+  pytest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: echo "${{ secrets.GEOFF_PAT }}" >> $INPUT_TOKEN
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9

@@ -1,8 +1,8 @@
-name: Firebase Test
+name: Integration Tests
 on: [push]
 
 jobs:
-  test_firebase:
+  integration_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
