@@ -1,10 +1,9 @@
 FLAGS = --secret-file .env
 ACT = act $(FLAGS)
 
-test_ece364prelabs:
-	$(ACT) -W test_integration/test_ece364prelabs/workflow.yml
+.PHONY: test_unit
 
-test_firebase:
-	$(ACT) -W test_integration/test_firebase/workflow.yml
+test_unit:
+	$(ACT) -W .github/workflows/test_unit.yml
 
-test: test_ece364prelabs test_firebase
+test: test_unit
