@@ -23,9 +23,6 @@ jobs:
         with:
           org: "firebase"
           pattern: '^quickstart.*$'
-          before: "2017-01-01T23:59:59-04:00"
-          org: "firebase"
-          pattern: '^quickstart.*$'
           after: "2017-01-01T23:59:59-04:00"
       - run: |
           [ '${{ steps.find_repos.outputs.repos }}' = '["firebase/quickstart-python", "firebase/quickstart-testing", "firebase/quickstart-flutter"]' ]
@@ -36,9 +33,6 @@ jobs:
       - uses: ./
         id: find_repos
         with:
-          org: "firebase"
-          pattern: '^quickstart.*$'
-          before: "2017-01-01T23:59:59-04:00"
           org: "firebase"
           pattern: '^quickstart.*$'
           after: "2022-03-06T23:59:59-04:00"
