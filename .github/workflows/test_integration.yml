@@ -1,0 +1,47 @@
+name: Integration Tests
+on: push
+
+jobs:
+  test_before:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        id: find_repos
+        with:
+          org: "firebase"
+          pattern: '^quickstart.*$'
+          before: "2017-01-01T23:59:59-04:00"
+      - run: |
+          [ '${{ steps.find_repos.outputs.repos }}' = '["firebase/quickstart-android", "firebase/quickstart-ios", "firebase/quickstart-js", "firebase/quickstart-cpp", "firebase/quickstart-nodejs", "firebase/quickstart-java", "firebase/quickstart-unity"]' ]
+  test_after:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        id: find_repos
+        with:
+          org: "firebase"
+          pattern: '^quickstart.*$'
+          before: "2017-01-01T23:59:59-04:00"
+          org: "firebase"
+          pattern: '^quickstart.*$'
+          after: "2017-01-01T23:59:59-04:00"
+      - run: |
+          [ '${{ steps.find_repos.outputs.repos }}' = '["firebase/quickstart-python", "firebase/quickstart-testing", "firebase/quickstart-flutter"]' ]
+  test_windowed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        id: find_repos
+        with:
+          org: "firebase"
+          pattern: '^quickstart.*$'
+          before: "2017-01-01T23:59:59-04:00"
+          org: "firebase"
+          pattern: '^quickstart.*$'
+          after: "2022-03-06T23:59:59-04:00"
+          before: "2022-03-07T23:59:59-04:00"
+      - run: |
+          [ '${{ steps.find_repos.outputs.repos }}' = '["firebase/quickstart-flutter"]' ]
