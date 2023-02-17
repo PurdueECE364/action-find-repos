@@ -11,9 +11,9 @@ inputs:
   pattern:
     description: "filter for repos matching a name"
     default: ".*"
-  created_after:
+  after:
     description: "filter for repos created after a timestamp"
-  created_before:
+  before:
     description: "filter for repos created before a timestamp."
     
 outputs:

@@ -6,7 +6,9 @@ from unittest import mock
 
 @mock.patch.dict(os.environ, {
     "INPUT_ORG": "firebase",
-    "INPUT_PATTERN": '^quickstart.*$'
+    "INPUT_PATTERN": "^quickstart.*$",
+    "INPUT_AFTER": "",
+    "INPUT_BEFORE": "",
 })
 def test_firebase():
     main()
@@ -16,9 +18,10 @@ def test_firebase():
 @mock.patch.dict(os.environ, {
     "INPUT_ORG": "firebase",
     "INPUT_PATTERN": '^quickstart.*$',
-    "INPUT_CREATED_AFTER": "2017-01-01T23:59:59-04:00",
+    "INPUT_AFTER": "2017-01-01T23:59:59-04:00",
+    "INPUT_BEFORE": "",
 })
-def test_firebase_createdafter():
+def test_firebase_after():
     main()
     assert os.environ['OUTPUT_REPOS'] == '["firebase/quickstart-python", "firebase/quickstart-testing", "firebase/quickstart-flutter"]'
 
@@ -26,9 +29,10 @@ def test_firebase_createdafter():
 @mock.patch.dict(os.environ, {
     "INPUT_ORG": "firebase",
     "INPUT_PATTERN": '^quickstart.*$',
-    "INPUT_CREATED_BEFORE": "2017-01-01T23:59:59-04:00"
+    "INPUT_AFTER": "",
+    "INPUT_BEFORE": "2017-01-01T23:59:59-04:00",
 })
-def test_firebase_createdbefore():
+def test_firebase_before():
     main()
     assert os.environ['OUTPUT_REPOS'] == '["firebase/quickstart-android", "firebase/quickstart-ios", "firebase/quickstart-js", "firebase/quickstart-cpp", "firebase/quickstart-nodejs", "firebase/quickstart-java", "firebase/quickstart-unity"]'
 
@@ -36,8 +40,8 @@ def test_firebase_createdbefore():
 @mock.patch.dict(os.environ, {
     "INPUT_ORG": "firebase",
     "INPUT_PATTERN": '^quickstart.*$',
-    "INPUT_CREATED_AFTER": "2022-03-06T23:59:59-04:00",
-    "INPUT_CREATED_BEFORE": "2022-03-07T23:59:59-04:00"
+    "INPUT_AFTER": "2022-03-06T23:59:59-04:00",
+    "INPUT_BEFORE": "2022-03-07T23:59:59-04:00"
 })
 def test_firebase_timewindowed():
     main()
@@ -47,8 +51,8 @@ def test_firebase_timewindowed():
 @mock.patch.dict(os.environ, {
     "INPUT_ORG": "firebase",
     "INPUT_PATTERN": '^quickstart.*$',
-    "INPUT_CREATED_AFTER": "2022-03-07T23:59:59-04:00",
-    "INPUT_CREATED_BEFORE": "2022-03-06T23:59:59-04:00"
+    "INPUT_AFTER": "2022-03-07T23:59:59-04:00",
+    "INPUT_BEFORE": "2022-03-06T23:59:59-04:00"
 })
 def test_firebase_timewindowed_invalid():
     with raises(SystemExit) as e:
@@ -58,7 +62,8 @@ def test_firebase_timewindowed_invalid():
 @mock.patch.dict(os.environ, {
     "INPUT_ORG": "firebase",
     "INPUT_PATTERN": '^quickstart.*$',
-    "INPUT_CREATED_BEFORE": "2015-04-01T23:59:59-04:00"
+    "INPUT_AFTER": "",
+    "INPUT_BEFORE": "2015-04-01T23:59:59-04:00"
 })
 def test_firebase_timewindowed_nonefound():
     with raises(SystemExit) as e:

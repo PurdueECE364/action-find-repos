@@ -4,14 +4,15 @@ import re
 from datetime import datetime, timezone
 
 from actions_toolkit import core
+from dateutil import parser
 from github import Github
 from github.PaginatedList import PaginatedList
 from github.Repository import Repository
 
 
 def search_repos(args):
-    g = Github(args['token'])
-    repos = g.get_organization(args['org']).get_repos()
+    g = Github(args['INPUT_TOKEN'])
+    repos = g.get_organization(args['INPUT_ORG']).get_repos()
     matched = []
     remaining = repos.totalCount
     page_num = 0
@@ -23,12 +24,11 @@ def search_repos(args):
             repo: Repository = repo
             # filtering
             filters = []
-            # name filtering
-            filters.append(re.match(args['pattern'], repo.name))
-            # date filtering
-            filters.append(args['created_after'] <=
-                           repo.created_at.replace(tzinfo=timezone.utc) <= args['created_before'])
-            if (all(filters)):
+            filters.append(re.match(args['INPUT_PATTERN'], repo.name))
+            filters.append(args['INPUT_AFTER'] <= repo.created_at.replace(
+                tzinfo=timezone.utc) <= args['INPUT_BEFORE'])
+            # update matched
+            if all(filters):
                 matched.append(repo.full_name)
         # update indeces
         remaining -= len(page_results)
@@ -38,37 +38,38 @@ def search_repos(args):
     return matched
 
 
-def parse_env():
-    inputs = ['org', 'token', 'pattern', 'created_after', 'created_before']
-    args = {}
-    for input in inputs:
-        args[input] = core.get_input(input, trim_whitespace=False)
-    args['created_after'] = datetime.fromisoformat(
-        args['created_after'])
-    args['created_before'] = datetime.fromisoformat(
-        args['created_before'])
-    if args['created_after'] >= args['created_before']:
-        raise Exception('created_after must come before created_before.')
-    return args
-
-
-def set_default_env():
-    os.environ.setdefault('INPUT_CREATED_AFTER', datetime.min.replace(
-        tzinfo=timezone.utc).isoformat())
-    os.environ.setdefault('INPUT_CREATED_BEFORE', datetime.max.replace(
-        tzinfo=timezone.utc).isoformat())
+def setup():
+    if not os.environ.get('INPUT_AFTER'):
+        os.environ['INPUT_AFTER'] = datetime(
+            1970, 1, 1).replace(tzinfo=timezone.utc).isoformat()
+        core.notice(
+            f"INPUT_AFTER is empty, defaulting to {os.environ['INPUT_AFTER']}")
+    if not os.environ.get('INPUT_BEFORE'):
+        os.environ['INPUT_BEFORE'] = datetime.utcnow().replace(
+            tzinfo=timezone.utc).isoformat()
+        core.notice(
+            f"INPUT_BEFORE is empty, defaulting to {os.environ['INPUT_BEFORE']}")
+    if os.environ['INPUT_AFTER'] > os.environ['INPUT_BEFORE']:
+        raise Exception(
+            f'INPUT_AFTER ({os.environ["INPUT_AFTER"]}) must come before INPUT_BEFORE ({os.environ["INPUT_BEFORE"]})')
+    return {
+        'INPUT_ORG': os.environ['INPUT_ORG'],
+        'INPUT_TOKEN': os.environ.get('INPUT_TOKEN'),
+        'INPUT_PATTERN': os.environ['INPUT_PATTERN'],
+        'INPUT_AFTER': parser.parse(os.environ.get('INPUT_AFTER')),
+        'INPUT_BEFORE': parser.parse(os.environ.get('INPUT_BEFORE')),
+    }
 
 
 def main():
     try:
-        set_default_env()
-        args = parse_env()
+        args = setup()
         matched = search_repos(args)
         core.set_output('repos', json.dumps(matched))
         core.info(f'{json.dumps(matched)}')
         core.export_variable('OUTPUT_REPOS', json.dumps(matched))
     except Exception as e:
-        core.set_failed(str(e))
+        core.set_failed(e)
 
 
 if __name__ == "__main__":
