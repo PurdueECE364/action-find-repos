@@ -49,16 +49,17 @@ def setup():
             tzinfo=timezone.utc).isoformat()
         core.debug(
             f"INPUT_BEFORE is empty, defaulting to {os.environ['INPUT_BEFORE']}")
-    if os.environ['INPUT_AFTER'] > os.environ['INPUT_BEFORE']:
-        raise Exception(
-            f'INPUT_AFTER ({os.environ["INPUT_AFTER"]}) must come before INPUT_BEFORE ({os.environ["INPUT_BEFORE"]})')
-    return {
+    args = {
         'INPUT_ORG': os.environ['INPUT_ORG'],
         'INPUT_TOKEN': os.environ.get('INPUT_TOKEN'),
         'INPUT_PATTERN': os.environ['INPUT_PATTERN'],
         'INPUT_AFTER': parser.parse(os.environ.get('INPUT_AFTER')),
         'INPUT_BEFORE': parser.parse(os.environ.get('INPUT_BEFORE')),
     }
+    if args['INPUT_AFTER'] > args['INPUT_BEFORE']:
+        raise Exception(
+            f'INPUT_AFTER ({args["INPUT_AFTER"]}) must come before INPUT_BEFORE ({args["INPUT_BEFORE"]})')
+    return args
 
 
 def main():
